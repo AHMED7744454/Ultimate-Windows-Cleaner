@@ -20,11 +20,18 @@ jobs:
     - name: Compile Script
       shell: powershell
       run: |
-        # سيقوم بالبحث عن ملف الـ bat في المجلد وتحويله مع إجبار صلاحيات المسؤول
-        ps2exe -inputFile "ULTIMATE CLEANER/SuperCleaner.bat" -outputFile "SuperCleaner.exe" -requireAdmin
+        # كود ذكي يبحث عن ملف الـ bat تلقائياً ويقوم بتحويله بصلاحية المسؤول
+        $batFile = (Get-ChildItem -Recurse -Filter *.bat | Select-Object -First 1).FullName
+        if ($batFile) {
+            Write-Host "Found batch file at: $batFile"
+            ps2exe -inputFile "$batFile" -outputFile "SuperCleaner.exe" -requireAdmin
+        } else {
+            Write-Error "No .bat file found in the entire repository!"
+            exit 1
+        }
 
     - name: Upload Executable
       uses: actions/upload-artifact@v4
       with:
-        name: SuperCleaner-EXE
-        path: SuperCleaner.exe
+        name: Super Cleaner-EXE
+        path: Super Cleaner.exe
